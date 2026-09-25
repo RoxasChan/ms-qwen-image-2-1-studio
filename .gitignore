@@ -1,0 +1,29 @@
+# ---- Dependencies ----
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Runtime data: contains credentials, never commit ----
+data/config.json
+data/history.json
+data/history.bak.json
+data/*.tmp
+
+# ---- Generated output ----
+# The server recreates this directory on startup.
+outputs/
+
+# ---- Environment files ----
+.env
+.env.*
+
+# ---- Editors / OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Local agent working memory ----
+.workbuddy/

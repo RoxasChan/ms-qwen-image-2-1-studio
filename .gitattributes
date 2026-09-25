@@ -1,0 +1,18 @@
+# Normalize line endings across platforms.
+# Files are stored with LF in the repository; Git converts on checkout.
+* text=auto eol=lf
+
+# Windows batch files MUST keep CRLF, otherwise cmd.exe may misparse
+# goto labels and parenthesised blocks after a clone on Linux/macOS.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary assets - never touch
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary

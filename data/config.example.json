@@ -1,0 +1,9 @@
+{
+  "apiKey": "",
+  "optimizer": {
+    "mode": "local",
+    "apiKey": "",
+    "baseUrl": "",
+    "model": "Qwen/Qwen3-8B"
+  }
+}

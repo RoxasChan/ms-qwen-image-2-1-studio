@@ -1,0 +1,30 @@
+MS Qwen Image Studio
+Copyright 2026 Roxas Chan <6800400@qq.com>
+
+This product is licensed under the Apache License, Version 2.0.
+A copy of the license is provided in the LICENSE file.
+
+--------------------------------------------------------------------------
+Third-party components and attributions
+--------------------------------------------------------------------------
+
+Qwen-Image-2.1 (model and inference service)
+  Provider : Alibaba Cloud / Tongyi Lab, served through ModelScope
+  License  : Apache License 2.0
+  URL      : https://modelscope.cn/models/Qwen/Qwen-Image-2.1
+
+ModelScope Inference API
+  Provider : ModelScope (Alibaba Group)
+  URL      : https://modelscope.cn
+
+The two prompt-specification documents shipped in data/rules/
+(official_t2i.md and official_edit.md) are reproductions of the
+official Qwen-Image prompt guidelines and remain the property of
+their original authors. They are included so that the built-in
+prompt optimizer can use them as a system prompt.
+
+--------------------------------------------------------------------------
+Author
+--------------------------------------------------------------------------
+
+  Roxas Chan <6800400@qq.com>
