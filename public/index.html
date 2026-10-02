@@ -70,9 +70,11 @@
         <section class="view active" id="view-studio">
           <h1 class="page-title">创作台</h1>
           <p class="page-sub">
-            Qwen-Image-2.1 · 统一文生图与图像编辑模型 · 原生支持 RGBA 透明通道 · 最多 10 张参考图
+            Qwen-Image-2.1 · 统一文生图与图像编辑模型 · 原生支持 RGBA 透明通道 · 参考图上限 4 张
           </p>
 
+          <div class="studio-layout">
+          <div class="studio-col">
           <div class="mode-tabs">
             <button class="mode-tab active" data-mode="t2i">
               <b>文生图</b><span>纯文字描述，从零生成图像</span>
@@ -82,6 +84,9 @@
             </button>
             <button class="mode-tab" data-mode="edit">
               <b>图像编辑</b><span>指令式局部/整体修改、透明图层编辑</span>
+            </button>
+            <button class="mode-tab" data-mode="inpaint">
+              <b>局部重绘</b><span>涂抹做掩码，或彩色圈选标注要改的区域</span>
             </button>
           </div>
 
@@ -95,10 +100,100 @@
           <div class="card" id="refCard" style="display: none">
             <div class="card-title"><span class="idx">↑</span>参考图 / 待编辑原图</div>
             <div class="drop" id="drop">
-              点击或拖拽图片到此处上传 · 支持多张（最多 10 张）· 编辑模式建议第 1 张为原图
+              点击或拖拽图片到此处上传 · 支持多张（接口上限 4 张）· 编辑模式建议第 1 张为原图
             </div>
             <input type="file" id="fileInput" accept="image/*" multiple hidden />
             <div class="thumbs" id="thumbs"></div>
+          </div>
+
+          <!-- 局部重绘：蒙版画笔 / 圈选标注 -->
+          <div class="card" id="maskCard" style="display: none">
+            <div class="card-title">
+              <span class="idx">✎</span>蒙版画笔 / 圈选标注
+              <span class="hint" id="maskMeta" style="margin-left: auto"></span>
+            </div>
+
+            <div class="mask-tools">
+              <div class="seg" id="brushSeg">
+                <button class="seg-btn active" data-tool="brush" title="自由涂抹标记，不封闭，适合涂抹掩码">画笔</button>
+                <button class="seg-btn" data-tool="eraser" title="擦掉已画的标记">橡皮</button>
+                <button
+                  class="seg-btn"
+                  data-tool="lasso"
+                  title="按住拖拽，自由画一个封闭的圈把要改的目标套起来 —— 不必是圆的，沿轮廓随手绕一圈即可"
+                >自由圈选</button>
+                <button class="seg-btn" data-tool="rect" title="拖拽画一个矩形框住要改的区域">矩形框</button>
+              </div>
+
+              <div class="field" style="flex: 1; min-width: 168px">
+                <label>笔刷 / 线宽 <span class="val" id="brushVal">—</span></label>
+                <!-- 滑块是 0–100 的「档位」，映射到像素走对数曲线（见 app.js 的 brushPxFromStep）：
+                     低档位细分成 1、2、3、4…px，高档位快速放到几百像素。
+                     线性滑块摆不下这个跨度，低端会全挤在一个屏幕像素里，1px 选不出来。 -->
+                <input
+                  type="range"
+                  id="brushSize"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value="0"
+                  title="左端为 1px 细线；预览为看得见会略作加粗，导出按实际像素"
+                />
+              </div>
+
+              <div class="field">
+                <label>标记颜色</label>
+                <select id="markColor">
+                  <optgroup label="涂抹掩码（单色，实测白色最干净）">
+                    <option value="#ffffff">白色</option>
+                  </optgroup>
+                  <optgroup label="圈选标注（多色，每色对应一条指令）">
+                    <option value="#1e6bff">蓝色</option>
+                    <option value="#ff3b30">红色</option>
+                    <option value="#17b26a">绿色</option>
+                    <option value="#ffb020">黄色</option>
+                    <option value="#a855f7">紫色</option>
+                    <option value="#00c2d1">青色</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>提交方式</label>
+                <select id="maskSubmit">
+                  <option value="painted">涂抹叠加到原图</option>
+                  <option value="separate">原图 + 独立掩码</option>
+                </select>
+              </div>
+
+              <div class="mask-actions">
+                <button class="btn btn-ghost btn-sm" id="undoMaskBtn">撤销</button>
+                <button class="btn btn-ghost btn-sm" id="clearMaskBtn">清空</button>
+                <label class="checkline"><input type="checkbox" id="hideMask" /> 隐藏标记</label>
+              </div>
+            </div>
+
+            <div class="mark-bar" id="markBar" style="display: none">
+              <span class="mark-bar-label">圈选清单</span>
+              <span class="mark-chips" id="markChips"></span>
+              <button
+                class="btn btn-ghost btn-sm"
+                id="markTemplateBtn"
+                title="按已画的颜色生成一段指令骨架，插入到提示词"
+              >生成指令骨架</button>
+            </div>
+
+            <div class="mark-advice" id="markAdvice" style="display: none"></div>
+
+            <div class="paint-wrap">
+              <div class="paint-stage" id="paintStage">
+                <img id="paintBase" alt="" />
+                <canvas id="paintCanvas"></canvas>
+                <div class="paint-empty" id="paintEmpty">先在上方上传一张待重绘的原图</div>
+              </div>
+            </div>
+
+            <span class="hint" id="maskHint"></span>
           </div>
 
           <!-- 提示词 -->
@@ -149,27 +244,29 @@
 
             <div class="grid-3">
               <div class="field">
-                <label>推理步数 num_inference_steps</label>
+                <label>推理步数 steps</label>
                 <div class="slider-row">
-                  <input type="range" id="steps" min="1" max="100" value="30" />
+                  <input type="range" id="steps" min="1" max="50" value="30" />
                   <span class="val" id="stepsVal">30</span>
                 </div>
-                <span class="hint">越多越精细，30–50 较均衡</span>
+                <span class="hint">接口上限 50，30–50 较均衡</span>
               </div>
 
               <div class="field">
-                <label>引导系数 guidance_scale</label>
+                <label>引导系数 guidance</label>
                 <div class="slider-row">
                   <input type="range" id="guidance" min="1" max="20" step="0.5" value="4" />
                   <span class="val" id="guidanceVal">4</span>
                 </div>
-                <span class="hint">越高越贴合提示词，4–7 常用</span>
+                <span class="hint">范围 1–20；越高越贴合提示词，4–7 常用</span>
               </div>
 
               <div class="field">
                 <label>随机种子 seed</label>
-                <input type="number" id="seed" placeholder="留空 = 随机" min="0" />
-                <span class="hint">固定种子可复现同一张图</span>
+                <input type="number" id="seed" placeholder="留空 = 随机" min="-1" max="2147483647" />
+                <span class="hint">
+                  留空 = 随机；固定种子可复现同一张图。一次多张时每张会自动用不同的种子
+                </span>
               </div>
             </div>
 
@@ -177,20 +274,27 @@
 
             <div class="grid-3">
               <div class="field">
-                <label>输出格式</label>
+                <label>透明背景</label>
                 <select id="outputFormat">
-                  <option value="RGB">RGB 普通图</option>
-                  <option value="RGBA">RGBA 透明通道图</option>
+                  <option value="RGB">不透明（默认）</option>
+                  <option value="RGBA">透明背景 · 抠图素材</option>
                 </select>
-                <span class="hint">透明素材 / 抠图选 RGBA</span>
+                <span class="hint">
+                  接口没有输出格式开关，模型恒输出 RGBA；选「透明背景」会按官方句式改写提示词
+                </span>
               </div>
 
-              <div class="field" style="justify-content: flex-end">
-                <label class="checkline">
-                  <input type="checkbox" id="watermark" />
-                  添加 ModelScope 水印
-                </label>
-                <span class="hint">默认无水印</span>
+              <div class="field">
+                <label>一次生成张数</label>
+                <select id="countPreset">
+                  <option value="1">1 张（默认）</option>
+                  <option value="2">2 张</option>
+                  <option value="3">3 张</option>
+                  <option value="4">4 张</option>
+                </select>
+                <span class="hint">
+                  接口没有批量参数，会拆成 N 个任务、各自计费；每张用不同种子，可并行提交下一批
+                </span>
               </div>
 
               <div class="field" style="justify-content: flex-end">
@@ -201,6 +305,24 @@
                 <span class="hint">命名规则 yyyymmdd####.png</span>
               </div>
             </div>
+          </div>
+
+          <!-- LoRA 适配器 -->
+          <div class="card">
+            <div class="card-title">
+              <span class="idx">3</span>LoRA 适配器
+              <span class="hint" id="loraSum" style="margin-left: auto"></span>
+            </div>
+            <div id="loraList" class="lora-list"></div>
+            <div class="row" style="margin-top: 6px">
+              <button class="btn btn-ghost btn-sm" id="loraAdd">＋ 添加 LoRA</button>
+            </div>
+            <div class="lora-recent" id="loraRecent"></div>
+            <span class="hint">
+              填 ModelScope 仓库 id（形如 <code>org/name</code>）—— 也可以直接把社区页面链接整条粘进来，会自动解析出 id。
+              最多 6 个，权重之和必须为 1.0，且 LoRA 需基于同一底座（Qwen-Image-2.1）训练。
+              接口会真的去下载这个 id，写错会让整个请求失败，而不是悄悄不用它。
+            </span>
           </div>
 
           <div class="row" style="margin-bottom: 22px">
@@ -216,17 +338,77 @@
             </div>
             <div class="result-area" id="resultArea"></div>
           </div>
+          </div>
+
+          <!-- 右栏：任务列表。任务由服务端后台推进，这里只是观察窗口 —— -->
+          <!-- 刷新页面、关掉标签页都不影响任务继续跑。 -->
+          <aside class="jobs-col" id="jobsCol">
+            <div class="jobs-head">
+              <span class="jobs-title">任务列表</span>
+              <span class="jobs-meta" id="jobsMeta"></span>
+            </div>
+            <div class="jobs-body" id="jobsList"></div>
+            <div class="jobs-foot" id="jobsFoot">
+              任务在服务端推进，关掉页面也会继续
+            </div>
+          </aside>
+          </div>
         </section>
 
         <!-- ---------- 提示词优化 ---------- -->
         <section class="view" id="view-chat">
           <h1 class="page-title">提示词优化对话</h1>
           <p class="page-sub">
-            用自然语言说出需求，AI 按 Qwen-Image-2.1 官方规则结构化重写提示词；不满意可以继续追问迭代
+            先在右上角选类型：<b>文生图提示词</b> 走 Image Prompt Rewriting 规范，<b>编辑图片提示词</b> 走 Edit
+            Prompt Enhancer 规范。编辑类需求要把图片<b>锁定</b>到对话里 —— 模型会真正"看"这些图再按规范改写，
+            所以保留声明是具体的（金色滚边、黄色盲道砖…），而不是笼统的"其余保持不变"。
+            需要「透明背景 / 抠图」类提示词时勾上 <b>附加规则</b> —— 官方两份规范都没有覆盖这两件事，
+            附加规则是本项目自写的补充条款，以<b>第二条 system 消息</b>追加，官方规范原文一字不动。
+            每个对话独立保存，可新建、重命名、删除。
           </p>
 
           <div class="chat-wrap">
             <div class="chat-box">
+              <div class="chat-head">
+                <div class="chat-scope">
+                  <span class="chat-scope-dot" id="chatScopeDot"></span>
+                  <span id="chatScope">未选择对话</span>
+                </div>
+                <div class="kind-seg" id="kindSeg">
+                  <button class="kind-btn active" data-kind="t2i" title="使用 official_t2i.md 规范">文生图提示词</button>
+                  <button class="kind-btn" data-kind="edit" title="使用 official_edit.md 规范">编辑图片提示词</button>
+                </div>
+                <label
+                  class="checkline extra-toggle"
+                  title="把项目自写的补充条款（透明图句式 / 主体提取）作为第二条 system 消息追加，官方规范原文一字不动"
+                >
+                  <input type="checkbox" id="extraRule" />
+                  附加规则
+                </label>
+              </div>
+              <div class="kind-hint" id="kindHint" hidden></div>
+
+              <div class="lock-bar" id="lockBar">
+                <div class="lock-head">
+                  <span class="lock-title">锁定图片</span>
+                  <span class="lock-count" id="lockCount"></span>
+                  <span class="lock-tip">改写时会把这些图交给模型"看"</span>
+                  <div class="lock-ops">
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      id="lockFromStudio"
+                      title="把创作台已上传的参考图压缩后锁定到本对话"
+                    >
+                      从创作台带入
+                    </button>
+                    <button class="btn btn-ghost btn-sm" id="lockAdd">上传</button>
+                    <button class="btn btn-ghost btn-sm" id="lockClear">清空</button>
+                  </div>
+                  <input type="file" id="lockFile" accept="image/*" multiple hidden />
+                </div>
+                <div class="lock-thumbs" id="lockThumbs"></div>
+              </div>
+
               <div class="chat-log" id="chatLog"></div>
               <div class="chat-input">
                 <textarea
@@ -239,18 +421,25 @@
 
             <div class="chat-side">
               <div class="card">
-                <div class="card-title">提示词结构模板</div>
-                <div class="chips" id="structChips"></div>
+                <div class="card-title">
+                  对话记录
+                  <button class="btn btn-ghost btn-sm card-title-btn" id="convNew">＋ 新建对话</button>
+                </div>
+                <div class="conv-list" id="convList"></div>
               </div>
+
               <div class="card">
-                <div class="card-title">官方要点</div>
-                <ul class="rule-list" id="ruleList"></ul>
+                <div class="card-title">当前使用的规范</div>
+                <div class="rule-info" id="ruleInfo"></div>
+                <div class="row" style="margin-top: 12px">
+                  <button class="btn btn-ghost btn-sm" id="viewRuleBtn">查看规范原文</button>
+                  <button class="btn btn-ghost btn-sm" id="viewExtraRuleBtn" hidden>查看附加规则原文</button>
+                </div>
               </div>
+
               <div class="card">
                 <div class="card-title">当前优化引擎</div>
-                <div id="engineInfo" style="font-size: 12px; color: var(--text-dim)">
-                  本地规则引擎
-                </div>
+                <div id="engineInfo" style="font-size: 12px; color: var(--text-dim)">—</div>
                 <div class="row" style="margin-top: 12px">
                   <button class="btn btn-ghost btn-sm" id="applyPromptBtn">
                     把最新提示词填入创作台
@@ -413,6 +602,18 @@
       </div>
     </div>
 
+    <!-- 规范原文查看器 -->
+    <div class="textmodal" id="textModal">
+      <div class="textmodal-box">
+        <div class="textmodal-head">
+          <b id="textModalTitle">规范原文</b>
+          <span class="textmodal-meta" id="textModalMeta"></span>
+          <button class="textmodal-close" id="textModalClose" title="关闭">✕</button>
+        </div>
+        <pre class="textmodal-body" id="textModalBody"></pre>
+      </div>
+    </div>
+
     <div class="toast-wrap" id="toastWrap"></div>
 
     <script>
@@ -431,7 +632,7 @@
           '本应用需要后端代理 ModelScope 接口，必须通过本地服务访问。' +
           '</div>' +
           '<div style="background:#0a0a0b;border:1px solid #26262e;border-radius:8px;padding:13px 15px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#a9b1ff;margin-bottom:20px">' +
-          'cd ' + decodeURIComponent(location.pathname.replace(/\\/public\\/.*$/, '').replace(/^\\//, '')) + '<br>' +
+          'cd ' + decodeURIComponent(location.pathname.replace(/\/public\/.*$/, '').replace(/^\//, '')) + '<br>' +
           'node server.js' +
           '</div>' +
           '<a href="' + target + '" style="display:inline-block;background:#5e6ad2;color:#fff;text-decoration:none;padding:11px 22px;border-radius:8px;font-size:13.5px;font-weight:550">' +

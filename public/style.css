@@ -568,6 +568,420 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: start;
 }
 
+/* 对话头部：上下文状态 + 新会话 */
+.chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-2);
+  border-radius: var(--radius) var(--radius) 0 0;
+  flex: none;
+}
+
+.chat-scope {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-scope-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--text-faint);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.chat-scope-dot.on {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* 类型选择器：文生图 / 编辑图片 */
+.kind-seg {
+  display: flex;
+  flex: none;
+  gap: 2px;
+  padding: 2px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.kind-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 11.5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.kind-btn:hover {
+  color: var(--text);
+}
+
+.kind-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* 类型相关的提示条（如编辑模式未上传参考图） */
+.kind-hint {
+  flex: none;
+  padding: 7px 14px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #f0c674;
+  background: rgba(240, 198, 116, 0.08);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ---------- 锁定图片区（对话内） ----------
+   这组图才是真正交给视觉模型"看"的，与创作台的参考图分开管理。 */
+.lock-bar {
+  flex: none;
+  padding: 9px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(94, 106, 210, 0.05);
+}
+
+.lock-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lock-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.lock-count {
+  font-size: 10.5px;
+  font-family: var(--mono);
+  color: var(--text-faint);
+}
+
+.lock-tip {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.lock-ops {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.lock-thumbs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.lock-empty {
+  font-size: 11px;
+  color: var(--text-faint);
+  padding: 2px 0;
+}
+
+.lock-thumb {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.lock-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  cursor: zoom-in;
+}
+
+.lock-thumb .del {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
+.lock-thumb .tag {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  font-size: 9px;
+  font-family: var(--mono);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 1px 3px;
+  border-radius: 3px;
+  color: #cfcfe0;
+}
+
+.card-title-btn {
+  margin-left: auto;
+}
+
+/* 对话记录列表 */
+.conv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 264px;
+  overflow-y: auto;
+  margin: -4px -4px 0;
+  padding: 4px;
+}
+
+.conv-empty {
+  font-size: 12px;
+  color: var(--text-faint);
+  text-align: center;
+  padding: 18px 0;
+}
+
+.conv-item {
+  border: 1px solid var(--border-soft);
+  background: var(--panel-2);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.conv-item:hover {
+  border-color: #34343f;
+}
+
+.conv-item.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.conv-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.conv-kind {
+  flex: none;
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(94, 106, 210, 0.2);
+  color: #a9b1ff;
+}
+
+.conv-kind.edit {
+  background: rgba(63, 185, 80, 0.16);
+  color: #7ee2a8;
+}
+
+.conv-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.conv-meta {
+  flex: 1;
+  font-size: 10.5px;
+  font-family: var(--mono);
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv-op {
+  border: none;
+  background: transparent;
+  color: var(--text-faint);
+  font-size: 10.5px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.conv-op:hover {
+  color: var(--text);
+  background: var(--border-soft);
+}
+
+.conv-op.del:hover {
+  color: var(--danger);
+}
+
+/* 规范文件信息卡 */
+.rule-info {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.rule-row {
+  display: flex;
+  gap: 8px;
+}
+
+.rule-row > span:first-child {
+  flex: none;
+  width: 52px;
+  color: var(--text-faint);
+}
+
+.rule-row > span:last-child {
+  min-width: 0;
+  word-break: break-all;
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
+
+.rule-outline {
+  margin: 8px 0 0;
+  padding: 8px 0 0 16px;
+  border-top: 1px dashed var(--border);
+  font-size: 11px;
+  color: var(--text-faint);
+  /* t2i 规范有 11 个章节标题，留够高度避免半行被切 */
+  max-height: 248px;
+  overflow-y: auto;
+}
+
+.rule-outline li {
+  margin-bottom: 2px;
+  line-height: 1.4;
+}
+
+.rule-missing {
+  color: var(--danger);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+/* ---------- 规范原文查看器 ---------- */
+.textmodal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.86);
+  backdrop-filter: blur(6px);
+  z-index: 998;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.textmodal.show {
+  display: flex;
+}
+
+.textmodal-box {
+  width: min(860px, 92vw);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.textmodal-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-2);
+  font-size: 13px;
+}
+
+.textmodal-meta {
+  flex: 1;
+  font-size: 10.5px;
+  font-family: var(--mono);
+  color: var(--text-faint);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.textmodal-close {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.textmodal-close:hover {
+  color: #fff;
+}
+
+.textmodal-body {
+  margin: 0;
+  padding: 16px 18px;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .chat-box {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -656,39 +1070,15 @@ input[type="range"]::-webkit-slider-thumb {
   margin-bottom: 12px;
 }
 
-.rule-list {
-  margin: 0;
-  padding-left: 16px;
-  font-size: 11.5px;
-  color: var(--text-dim);
-  line-height: 1.65;
-}
-
-.rule-list li {
-  margin-bottom: 5px;
-}
-
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.chip {
-  font-size: 11px;
-  padding: 4px 9px;
-  border-radius: 20px;
-  background: var(--panel-2);
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  cursor: pointer;
-  transition: all 0.14s;
-}
-
-.chip:hover {
-  border-color: var(--accent);
-  color: #a9b1ff;
-}
+/* 注意：原先这里还有 .rule-list / .chip（提示词结构模板 与 官方要点 两张卡片用），
+   那两张卡展示的是手写的规范摘要，会与官方规范原文漂移，已随卡片一并移除。
+   规范信息现在由 .rule-info + .rule-outline 从 /api/rules 返回的真实文件元信息渲染。 */
 
 /* ---------- 生成进度 ---------- */
 .progress {
@@ -1105,4 +1495,551 @@ input[type="checkbox"] {
   .chat-box {
     height: 520px;
   }
+}
+
+/* ---------- 局部重绘：蒙版画笔 ---------- */
+
+.mask-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* 画笔 / 橡皮 分段控件 */
+.seg {
+  display: inline-flex;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+  height: 34px;
+}
+
+.seg-btn {
+  border: 0;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 0 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s;
+}
+
+.seg-btn:hover {
+  color: var(--text);
+}
+
+.seg-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.mask-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  /* 工具按钮从 2 个增加到 4 个后，这一组会被挤到行尾的一小撮位置，
+     所以让它独占一行并右对齐，与被挤扁相比更易读 */
+  flex: 1 1 100%;
+  justify-content: flex-end;
+}
+
+/* 圈选清单：哪种颜色画了几处。提示词就照这个写 —— 一种颜色一条指令。 */
+.mark-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+}
+
+.mark-bar-label {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  letter-spacing: 0.3px;
+}
+
+.mark-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mark-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 9px 2px 5px;
+  white-space: nowrap;
+}
+
+/* 色块必须显示真实颜色，不能套主题色：这抹颜色就是提示词里要写的那把钥匙，
+   显示成别的颜色会让人照着写错 */
+.mark-chip i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  flex: none;
+}
+
+/* 落坑体检：只提醒，绝不替用户改提示词 */
+.mark-advice {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.mark-advisory {
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--text-dim);
+  background: rgba(210, 153, 34, 0.1);
+  border-left: 2px solid #d29922;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 6px 9px;
+}
+
+.mark-advisory .w {
+  color: #d29922;
+  margin-right: 5px;
+}
+
+/* 画布区：棋盘格底衬，便于看清透明区域与标记边界 */
+.paint-wrap {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--bg);
+  background-image: linear-gradient(45deg, #17171c 25%, transparent 25%),
+    linear-gradient(-45deg, #17171c 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #17171c 75%),
+    linear-gradient(-45deg, transparent 75%, #17171c 75%);
+  background-size: 18px 18px;
+  background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+  overflow: hidden;
+  margin-bottom: 10px;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 双层结构：底层是原图 <img>，上层是透明画布只画标记。
+   这样涂抹时无需重绘底图，2048² 下也不会卡顿。 */
+.paint-stage {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  max-width: 100%;
+}
+
+#paintBase {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#paintCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none; /* 触屏涂抹时不触发页面滚动 */
+}
+
+#paintCanvas.is-hidden {
+  visibility: hidden;
+}
+
+.paint-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  font-size: 12.5px;
+  pointer-events: none;
+  padding: 20px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ---------- LoRA 适配器 ---------- */
+
+.lora-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lora-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lora-row input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+
+.lora-row input[type="number"] {
+  width: 78px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+
+.lora-row .lora-del {
+  flex: none;
+}
+
+.lora-empty {
+  color: var(--text-faint);
+  font-size: 12.5px;
+  padding: 2px 0 4px;
+}
+
+.lora-sum-ok {
+  color: var(--ok);
+}
+
+.lora-sum-bad {
+  color: var(--danger);
+}
+
+/* 最近用过的 LoRA：点一下就填进输入框，省得每次回社区翻仓库 */
+.lora-recent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.lora-chip {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  padding: 4px 9px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: border-color 0.14s, color 0.14s;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lora-chip:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* ---------- 提示词优化：附加规则开关 ---------- */
+
+.extra-toggle {
+  flex: none;
+  margin-left: 4px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+  height: 30px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ================= 创作台两列：左主区 + 右任务列表 =================
+   任务由服务端后台推进，右栏只是"观察窗口" —— 所以它的定位是常驻侧栏，
+   不做弹窗：用户要能一边改参数一边瞄着上一批跑到第几张。 */
+
+.studio-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+/* 创作台比其它视图宽，否则右栏没地方站 */
+#view-studio.view {
+  max-width: 1760px;
+}
+
+.studio-col {
+  flex: 1 1 auto;
+  min-width: 0; /* 让内部 grid 可收缩，否则会撑破 */
+}
+
+.jobs-col {
+  flex: 0 0 300px;
+  position: sticky;
+  top: 0;
+  max-height: calc(100vh - 30px);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.jobs-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.jobs-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.jobs-meta {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.jobs-body {
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 90px;
+}
+
+.jobs-foot {
+  padding: 8px 13px;
+  border-top: 1px solid var(--border-soft);
+  font-size: 11px;
+  color: var(--text-faint);
+  line-height: 1.5;
+}
+
+.jobs-empty {
+  padding: 24px 10px;
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.job-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: var(--panel);
+}
+
+.job-item.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.job-item.clickable {
+  cursor: pointer;
+}
+
+.job-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.job-badge {
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  color: var(--text-dim);
+}
+
+.job-badge.run { color: #7f8cff; }
+.job-badge.done { color: var(--ok); }
+.job-badge.partial { color: #d8a657; }
+.job-badge.failed { color: var(--danger); }
+.job-badge.cancelled { color: var(--text-faint); }
+
+.job-when {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.job-prompt {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.job-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-soft);
+  overflow: hidden;
+}
+
+.job-progress > i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+.job-thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+.job-thumb {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.job-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.job-thumb .mini {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--text-faint);
+  text-align: center;
+  line-height: 1.3;
+  padding: 2px;
+}
+
+.job-thumb.failed {
+  border-color: rgba(229, 72, 77, 0.45);
+}
+
+.job-thumb.failed .mini {
+  color: var(--danger);
+}
+
+.job-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.job-actions .btn {
+  padding: 3px 9px;
+  font-size: 11.5px;
+}
+
+.job-err {
+  font-size: 11px;
+  color: var(--danger);
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+/* 批内相似度结论：正常情况是一行淡淡的说明，发现真的同图才变警示色 */
+.job-sim {
+  font-size: 11px;
+  color: var(--text-faint);
+  line-height: 1.5;
+}
+
+.job-sim-bad {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+  .studio-layout {
+    flex-direction: column;
+  }
+  .jobs-col {
+    position: static;
+    flex: 1 1 auto;
+    width: 100%;
+    max-height: none;
+  }
+  .jobs-body {
+    max-height: 300px;
+  }
+}
+
+/* 结果区占位（生成中 / 失败）：结果区是等宽网格，占位也要占一格，
+   否则未完成的张数会"看不见"，用户以为漏了一张。 */
+.result-item.result-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  padding: 16px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-faint);
+  background: var(--bg);
+  border-style: dashed;
+  cursor: default;
+}
+
+.result-item.result-ph.err {
+  color: var(--danger);
+  border-color: rgba(229, 72, 77, 0.4);
+}
+
+.job-count {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.job-info {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-right: auto;
 }

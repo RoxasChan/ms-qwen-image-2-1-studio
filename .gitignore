@@ -8,11 +8,19 @@ pnpm-debug.log*
 data/config.json
 data/history.json
 data/history.bak.json
+data/conversations.json
+data/conversations.bak.json
+# 生图作业队列。只存参数与任务 id（不含 API Key、不含图片），但含提示词 —— 属运行时数据。
+data/jobs.json
 data/*.tmp
 
 # ---- Generated output ----
 # The server recreates this directory on startup.
 outputs/
+
+# ---- Conversation reference images (compressed,落盘引用) ----
+# 对话锁定的参考图，与 outputs/ 对称。同样启动时自动创建，不入库。
+inputs/
 
 # ---- Environment files ----
 .env
@@ -27,3 +35,10 @@ desktop.ini
 
 # ---- Local agent working memory ----
 .workbuddy/
+
+# ---- Local archives (self-snapshots, never commit) ----
+*.rar
+*.7z
+*.zip
+*.tar
+*.tar.gz

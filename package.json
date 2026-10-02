@@ -1,6 +1,6 @@
 {
   "name": "ms-qwen-image-2-1-studio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Qwen-Image-2.1 Studio — 本地生图工作台（ModelScope 代理 + 静态前端，零第三方依赖）",
   "license": "Apache-2.0",
   "author": "Roxas Chan <6800400@qq.com>",

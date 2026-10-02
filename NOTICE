@@ -10,8 +10,29 @@ Third-party components and attributions
 
 Qwen-Image-2.1 (model and inference service)
   Provider : Alibaba Cloud / Tongyi Lab, served through ModelScope
-  License  : Apache License 2.0
+  License  : Qwen RESEARCH LICENSE AGREEMENT (non-commercial)
   URL      : https://modelscope.cn/models/Qwen/Qwen-Image-2.1
+  Terms    : https://modelscope.cn/models/Qwen/Qwen-Image-2.1/file/view/master/LICENSE
+
+  NOT Apache-2.0. Qwen-Image 1.0 shipped under Apache-2.0, but version 2.1
+  switched to the Qwen Research License Agreement, which permits research and
+  evaluation use only (Section 1.i, Section 2.a). Commercial use requires a
+  separate license from model-business@notice.qwencloud.com (Section 2.b).
+
+  Consequently, images produced through this tool inherit that restriction and
+  must not be used commercially without an appropriate license.
+
+  Two further clauses are worth noting:
+    - Section 4.c: "Qwen" may not be used as the primary name or identifier of a
+      derivative work or product; descriptive use (e.g. "fine-tuned from Qwen
+      Image") is permitted.
+    - Section 4.b: if the output is used to create, train, fine-tune or improve
+      another distributed model, the product documentation must state
+      "Built with Qwen" or "Improved using Qwen".
+
+  This project is a client-side tool that calls the model over HTTP; it bundles
+  no model weights. Its own source remains Apache-2.0, while the end user's use
+  of the model is governed by the agreement above.
 
 ModelScope Inference API
   Provider : ModelScope (Alibaba Group)
@@ -22,6 +43,16 @@ The two prompt-specification documents shipped in data/rules/
 official Qwen-Image prompt guidelines and remain the property of
 their original authors. They are included so that the built-in
 prompt optimizer can use them as a system prompt.
+They are never modified by this project, and they are always sent
+to the model byte-for-byte as-is.
+
+A third file in the same directory, extra_transparent_subject.md,
+is NOT an official document. It is written by this project, covers
+the two areas the official specifications do not address
+(transparent-image sentence patterns and subject extraction), and
+is sent as a separate system message only when the user explicitly
+enables it. It is licensed under the same Apache-2.0 terms as the
+rest of this project.
 
 --------------------------------------------------------------------------
 Author
